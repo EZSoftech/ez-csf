@@ -1,0 +1,17 @@
+.vscode
+.DS_Store
+.idea
+/node_modules
+/typings
+/build
+/coverage
+/config/default.json
+/config/database.json
+/config/development.json
+/config/local.json
+/db/database.json
+npm-debug.log
+/tmp
+.scannerwork/
+package-lock.json
+/config/id_rsa

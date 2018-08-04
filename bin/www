@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+'use strict';
+var server = require('../dist/src/server'),
+    debug = require('debug')('express:server'),
+    http = require('http'),
+
+    app = server.Server.bootstrap().app,
+    httpPort = normalizePort(process.env.PORT || app.get('port')),
+    httpServer = null;
+
+httpServer = http.createServer(app);
+httpServer.listen(httpPort);
+httpServer.on('error', onError);
+httpServer.on('listening', onListening);
+
+function normalizePort(val) {
+    var port = parseInt(val, 10);
+    if (isNaN(port)) {
+        return val;
+    }
+    if (port >= 0) {
+        return port;
+    }
+    return false;
+}
+
+function onError(error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+    var bind = typeof httpPort === 'string' ? 'Pipe ' + httpPort : 'port ' + httpPort;
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+function onListening() {
+    var address = httpServer.address(),
+        bind = typeof address === 'string' ? 'Pipe ' + address : 'port ' + address.port;
+    debug('Listening on ' + bind);
+    console.log('Server is listening on ' + bind);
+}
