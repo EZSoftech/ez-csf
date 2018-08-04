@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var config = require("config");
 var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
@@ -15,13 +14,14 @@ var API_UI_PATH = '/api-docs';
 var API_DOCS = '/docs';
 var AbstractServer = /** @class */ (function () {
     function AbstractServer(config) {
+        this.config = config;
         this.loadConfig();
         this.initApp();
         this.initAppConfig();
     }
     AbstractServer.prototype.loadConfig = function () {
-        this.swaggerConfig = config.get('swagger');
-        this.port = config.get('port');
+        this.swaggerConfig = this.config.get('swagger');
+        this.port = this.config.get('port');
     };
     AbstractServer.prototype.initApp = function () {
         this.app = express();
