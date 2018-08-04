@@ -2,7 +2,7 @@
   "name": "ez-csf",
   "version": "1.0.0",
   "description": "Common Service Framework",
-  "main": "build/server.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "gulp": "gulp",
     "start": "gulp"

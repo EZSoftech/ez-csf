@@ -19,16 +19,18 @@ export abstract class AbstractServer {
     app: Application;
     port: number | undefined;
     swaggerConfig: any;
+    config: any;
 
     constructor(config: any) {
+        this.config = config;
         this.loadConfig();
         this.initApp();
         this.initAppConfig();
     }
 
     loadConfig(): void {
-        this.swaggerConfig = config.get('swagger');
-        this.port = config.get('port');
+        this.swaggerConfig = this.config.get('swagger');
+        this.port = this.config.get('port');
     }
 
     initApp(): void {
