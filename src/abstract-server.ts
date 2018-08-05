@@ -1,4 +1,3 @@
-import * as config from 'config';
 import * as express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
 import * as bodyParser from 'body-parser';
@@ -10,6 +9,7 @@ import * as methodOverride from 'method-override';
 import * as swaggerTools from 'swagger-tools';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
+import { EZServerConfig } from './models/server-config';
 
 const API_UI_PATH = '/api-docs';
 const API_DOCS = '/docs';
@@ -17,20 +17,14 @@ const API_DOCS = '/docs';
 export abstract class AbstractServer {
 
     app: Application;
-    port: number | undefined;
-    swaggerConfig: any;
     config: any;
 
-    constructor(config: any) {
-        this.config = config;
-        this.loadConfig();
+    public abstract getConfig(): EZServerConfig;
+
+    constructor() {
+        this.config = this.getConfig();
         this.initApp();
         this.initAppConfig();
-    }
-
-    loadConfig(): void {
-        this.swaggerConfig = this.config.get('swagger');
-        this.port = this.config.get('port');
     }
 
     initApp(): void {
@@ -38,10 +32,10 @@ export abstract class AbstractServer {
     }
 
     initAppConfig(): void {
-        let yamlPath = path.resolve(__dirname, this.swaggerConfig.yamlPath);
+        let yamlPath = path.resolve(__dirname, this.config.swagger.yamlPath);
         let swaggerDefinition = yaml.safeLoad(fs.readFileSync(yamlPath, 'utf8'));
-        let controllerPath = path.resolve(__dirname, this.swaggerConfig.controllerPath);
-        this.app.set('port', this.port);
+        let controllerPath = path.resolve(__dirname, this.config.swagger.controllerPath);
+        this.app.set('port', this.config.port);
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({
@@ -61,8 +55,8 @@ export abstract class AbstractServer {
             this.app.use(middleware.swaggerMetadata());
             this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: controllerPath }));
             this.app.use(middleware.swaggerUi({
-                apiDocs: this.swaggerConfig.apiBaseUrl + API_DOCS,
-                swaggerUi: this.swaggerConfig.apiBaseUrl + API_UI_PATH
+                apiDocs: this.config.swagger.apiBaseUrl + API_DOCS,
+                swaggerUi: this.config.swagger.apiBaseUrl + API_UI_PATH
             }));
         });
     }

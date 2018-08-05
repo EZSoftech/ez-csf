@@ -1,60 +1,43 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var express = require("express");
-var bodyParser = require("body-parser");
-var logger = require("morgan");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var errorHandler = require("errorhandler");
-var methodOverride = require("method-override");
-var swaggerTools = require("swagger-tools");
-var yaml = require("js-yaml");
-var fs = require("fs");
-var API_UI_PATH = '/api-docs';
-var API_DOCS = '/docs';
-var AbstractServer = /** @class */ (function () {
-    function AbstractServer(config) {
-        this.config = config;
-        this.loadConfig();
-        this.initApp();
-        this.initAppConfig();
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
     }
-    AbstractServer.prototype.loadConfig = function () {
-        this.swaggerConfig = this.config.get('swagger');
-        this.port = this.config.get('port');
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
-    AbstractServer.prototype.initApp = function () {
-        this.app = express();
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var abstract_server_1 = require("./abstract-server");
+var Server = /** @class */ (function (_super) {
+    __extends(Server, _super);
+    function Server() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Server.bootstrap = function () {
+        return new Server();
     };
-    AbstractServer.prototype.initAppConfig = function () {
-        var _this = this;
-        var yamlPath = path.resolve(__dirname, this.swaggerConfig.yamlPath);
-        var swaggerDefinition = yaml.safeLoad(fs.readFileSync(yamlPath, 'utf8'));
-        var controllerPath = path.resolve(__dirname, this.swaggerConfig.controllerPath);
-        this.app.set('port', this.port);
-        this.app.use(logger('dev'));
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({
-            extended: true
-        }));
-        this.app.use(cookieParser('SECRET_GOES_HERE'));
-        this.app.use(methodOverride());
-        this.app.use(function (err, req, res, next) {
-            err.status = 404;
-            next(err);
-        });
-        this.app.use(errorHandler());
-        swaggerTools.initializeMiddleware(swaggerDefinition, function (middleware) {
-            _this.app.use(middleware.swaggerMetadata());
-            _this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: controllerPath }));
-            _this.app.use(middleware.swaggerUi({
-                apiDocs: _this.swaggerConfig.apiBaseUrl + API_DOCS,
-                swaggerUi: _this.swaggerConfig.apiBaseUrl + API_UI_PATH
-            }));
-        });
+    Server.prototype.getConfig = function () {
+        return {
+            port: 4000,
+            swagger: {
+                apiBaseUrl: '/ez-csf/v1',
+                yamlPath: './api.yaml',
+                controllerPath: './controllers',
+                protectedEndpoints: [
+                    '/ez-csf/v1/auth/login'
+                ],
+                corsEndpoints: []
+            }
+        };
     };
-    return AbstractServer;
-}());
-exports.AbstractServer = AbstractServer;
+    return Server;
+}(abstract_server_1.AbstractServer));
+exports.Server = Server;
 
 //# sourceMappingURL=server.js.map
