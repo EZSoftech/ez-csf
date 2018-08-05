@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
-var path = require("path");
 var cookieParser = require("cookie-parser");
 var errorHandler = require("errorhandler");
 var methodOverride = require("method-override");
@@ -23,9 +22,7 @@ var AbstractServer = /** @class */ (function () {
     };
     AbstractServer.prototype.initAppConfig = function () {
         var _this = this;
-        var yamlPath = path.resolve(__dirname, this.config.swagger.yamlPath);
-        var swaggerDefinition = yaml.safeLoad(fs.readFileSync(yamlPath, 'utf8'));
-        var controllerPath = path.resolve(__dirname, this.config.swagger.controllerPath);
+        var swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.config.swagger.yamlPath, 'utf8'));
         this.app.set('port', this.config.port);
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
@@ -41,7 +38,7 @@ var AbstractServer = /** @class */ (function () {
         this.app.use(errorHandler());
         swaggerTools.initializeMiddleware(swaggerDefinition, function (middleware) {
             _this.app.use(middleware.swaggerMetadata());
-            _this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: controllerPath }));
+            _this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: _this.config.swagger.controllerPath }));
             _this.app.use(middleware.swaggerUi({
                 apiDocs: _this.config.swagger.apiBaseUrl + API_DOCS,
                 swaggerUi: _this.config.swagger.apiBaseUrl + API_UI_PATH
