@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as mysql from 'mysql';
 import { Application, Request, Response, NextFunction } from 'express';
 import * as bodyParser from 'body-parser';
 import * as logger from 'morgan';
@@ -9,6 +10,8 @@ import * as swaggerTools from 'swagger-tools';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import { EZServerConfig } from './models/server-config';
+import { authenticate } from './middlewares/auth';
+import { Router } from 'express';
 
 const API_UI_PATH = '/api-docs';
 const API_DOCS = '/docs';
@@ -16,18 +19,29 @@ const API_DOCS = '/docs';
 export abstract class AbstractServer {
 
     app: Application;
-    config: any;
+    router: Router;
+    config: EZServerConfig;
 
     public abstract getConfig(): EZServerConfig;
 
     constructor() {
         this.config = this.getConfig();
         this.initApp();
+        this.initDatabase();
         this.initAppConfig();
     }
 
     initApp(): void {
         this.app = express();
+        this.router = express.Router();
+    }
+
+    initDatabase(): void {
+        this.app.use((req, res, next) => {
+            res.locals.connection = mysql.createConnection(this.config.db);
+            res.locals.connection.connect();
+            next();
+        });
     }
 
     initAppConfig(): void {
@@ -40,6 +54,7 @@ export abstract class AbstractServer {
         }));
         this.app.use(cookieParser('SECRET_GOES_HERE'));
         this.app.use(methodOverride());
+        this.app.use(this.config.swagger.protectedEndpoints.map(endpoint => this.config.swagger.apiBaseUrl + endpoint), authenticate);
         this.app.use((err: any,
             req: Request,
             res: Response,

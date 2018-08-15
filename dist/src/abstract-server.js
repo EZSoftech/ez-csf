@@ -1,28 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var express = require("express");
-var bodyParser = require("body-parser");
-var logger = require("morgan");
-var cookieParser = require("cookie-parser");
-var errorHandler = require("errorhandler");
-var methodOverride = require("method-override");
-var swaggerTools = require("swagger-tools");
-var yaml = require("js-yaml");
-var fs = require("fs");
-var API_UI_PATH = '/api-docs';
-var API_DOCS = '/docs';
-var AbstractServer = /** @class */ (function () {
-    function AbstractServer() {
+const express = require("express");
+const mysql = require("mysql");
+const bodyParser = require("body-parser");
+const logger = require("morgan");
+const cookieParser = require("cookie-parser");
+const errorHandler = require("errorhandler");
+const methodOverride = require("method-override");
+const swaggerTools = require("swagger-tools");
+const yaml = require("js-yaml");
+const fs = require("fs");
+const auth_1 = require("./middlewares/auth");
+const API_UI_PATH = '/api-docs';
+const API_DOCS = '/docs';
+class AbstractServer {
+    constructor() {
         this.config = this.getConfig();
         this.initApp();
+        this.initDatabase();
         this.initAppConfig();
     }
-    AbstractServer.prototype.initApp = function () {
+    initApp() {
         this.app = express();
-    };
-    AbstractServer.prototype.initAppConfig = function () {
-        var _this = this;
-        var swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.config.swagger.yamlPath, 'utf8'));
+        this.router = express.Router();
+    }
+    initDatabase() {
+        this.app.use((req, res, next) => {
+            res.locals.connection = mysql.createConnection(this.config.db);
+            res.locals.connection.connect();
+            next();
+        });
+    }
+    initAppConfig() {
+        let swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.config.swagger.yamlPath, 'utf8'));
         this.app.set('port', this.config.port);
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
@@ -31,22 +41,22 @@ var AbstractServer = /** @class */ (function () {
         }));
         this.app.use(cookieParser('SECRET_GOES_HERE'));
         this.app.use(methodOverride());
-        this.app.use(function (err, req, res, next) {
+        this.app.use(this.config.swagger.protectedEndpoints.map(endpoint => this.config.swagger.apiBaseUrl + endpoint), auth_1.authenticate);
+        this.app.use((err, req, res, next) => {
             err.status = 404;
             next(err);
         });
         this.app.use(errorHandler());
-        swaggerTools.initializeMiddleware(swaggerDefinition, function (middleware) {
-            _this.app.use(middleware.swaggerMetadata());
-            _this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: _this.config.swagger.controllerPath }));
-            _this.app.use(middleware.swaggerUi({
-                apiDocs: _this.config.swagger.apiBaseUrl + API_DOCS,
-                swaggerUi: _this.config.swagger.apiBaseUrl + API_UI_PATH
+        swaggerTools.initializeMiddleware(swaggerDefinition, (middleware) => {
+            this.app.use(middleware.swaggerMetadata());
+            this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: this.config.swagger.controllerPath }));
+            this.app.use(middleware.swaggerUi({
+                apiDocs: this.config.swagger.apiBaseUrl + API_DOCS,
+                swaggerUi: this.config.swagger.apiBaseUrl + API_UI_PATH
             }));
         });
-    };
-    return AbstractServer;
-}());
+    }
+}
 exports.AbstractServer = AbstractServer;
 
 //# sourceMappingURL=abstract-server.js.map

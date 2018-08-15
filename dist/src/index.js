@@ -4,5 +4,6 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./abstract-server"));
+__export(require("./db/connection-pool"));
 
 //# sourceMappingURL=index.js.map

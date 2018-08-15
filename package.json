@@ -13,6 +13,7 @@
   "author": "M A Akhtar",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "body-parser": "^1.18.3",
     "config": "^2.0.1",
     "cookie-parser": "^1.4.3",
@@ -28,6 +29,7 @@
     "swagger-tools": "^0.10.4"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.23",
     "@types/body-parser": "^1.17.0",
     "@types/config": "0.0.34",
     "@types/cookie-parser": "^1.4.1",

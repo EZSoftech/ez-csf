@@ -7,4 +7,10 @@ export interface EZServerConfig {
         protectedEndpoints?: Array<string>;
         corsEndpoints?: Array<string>;
     };
+    db: {
+        host: string;
+        user: string;
+        password: string;
+        database: string;
+    };
 }
