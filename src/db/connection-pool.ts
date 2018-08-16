@@ -1,6 +1,9 @@
 import * as MySql from 'mysql';
 import * as Promise from 'bluebird';
-import * as config from 'config';
+
+const READ_DB = 'read';
+const WRITE_DB = 'write';
+
 export class ConnectionPool {
 
     private pools: Map<string, MySql.Pool>;
@@ -33,7 +36,8 @@ export class ConnectionPool {
 
     initPools(config: any): void {
         this.config = config;
-        this.create('db', this.config);
+        this.create(READ_DB, this.config);
+        this.create(WRITE_DB, this.config);
     }
 
     private create(type: string, config: any): void {
