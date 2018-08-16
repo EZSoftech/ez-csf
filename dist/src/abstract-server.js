@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
-const mysql = require("mysql");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const cookieParser = require("cookie-parser");
@@ -11,6 +10,7 @@ const swaggerTools = require("swagger-tools");
 const yaml = require("js-yaml");
 const fs = require("fs");
 const auth_1 = require("./middlewares/auth");
+const connection_pool_1 = require("./db/connection-pool");
 const API_UI_PATH = '/api-docs';
 const API_DOCS = '/docs';
 class AbstractServer {
@@ -25,11 +25,12 @@ class AbstractServer {
         this.router = express.Router();
     }
     initDatabase() {
-        this.app.use((req, res, next) => {
-            res.locals.connection = mysql.createConnection(this.config.db);
-            res.locals.connection.connect();
-            next();
-        });
+        connection_pool_1.pool.initPools(this.config.db);
+        // this.app.use((req, res, next) => {
+        //     res.locals.connection = mysql.createConnection(this.config.db);
+        //     res.locals.connection.connect();
+        //     next();
+        // });
     }
     initAppConfig() {
         let swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.config.swagger.yamlPath, 'utf8'));

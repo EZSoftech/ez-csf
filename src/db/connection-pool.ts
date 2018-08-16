@@ -4,10 +4,10 @@ import * as config from 'config';
 export class ConnectionPool {
 
     private pools: Map<string, MySql.Pool>;
+    private config: any;
 
     constructor() {
         this.pools = new Map();
-        this.initPools();
     }
 
     getConnection(type: string): Promise<MySql.PoolConnection> {
@@ -31,9 +31,9 @@ export class ConnectionPool {
         });
     }
 
-    private initPools(): void {
-        let dbConfig = config.has('db') ? config.get('db') : undefined;
-        this.create('db', dbConfig);
+    initPools(config: any): void {
+        this.config = config;
+        this.create('db', this.config);
     }
 
     private create(type: string, config: any): void {

@@ -25,7 +25,7 @@ export class Server extends AbstractServer {
                 host: 'localhost',
                 user: 'root',
                 password: 'Admin',
-                database: 'cp_navigation_dev'
+                database: 'ez-insights'
             }
         };
     }

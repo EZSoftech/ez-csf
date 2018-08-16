@@ -23,7 +23,7 @@ class Server extends abstract_server_1.AbstractServer {
                 host: 'localhost',
                 user: 'root',
                 password: 'Admin',
-                database: 'cp_navigation_dev'
+                database: 'ez-insights'
             }
         };
     }

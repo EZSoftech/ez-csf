@@ -2,11 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const MySql = require("mysql");
 const Promise = require("bluebird");
-const config = require("config");
 class ConnectionPool {
     constructor() {
         this.pools = new Map();
-        this.initPools();
     }
     getConnection(type) {
         return new Promise((resolve, reject) => {
@@ -31,9 +29,9 @@ class ConnectionPool {
             }
         });
     }
-    initPools() {
-        let dbConfig = config.has('db') ? config.get('db') : undefined;
-        this.create('db', dbConfig);
+    initPools(config) {
+        this.config = config;
+        this.create('db', this.config);
     }
     create(type, config) {
         if (!config) {

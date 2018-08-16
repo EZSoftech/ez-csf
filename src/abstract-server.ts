@@ -12,6 +12,7 @@ import * as fs from 'fs';
 import { EZServerConfig } from './models/server-config';
 import { authenticate } from './middlewares/auth';
 import { Router } from 'express';
+import { pool } from './db/connection-pool';
 
 const API_UI_PATH = '/api-docs';
 const API_DOCS = '/docs';
@@ -37,11 +38,12 @@ export abstract class AbstractServer {
     }
 
     initDatabase(): void {
-        this.app.use((req, res, next) => {
-            res.locals.connection = mysql.createConnection(this.config.db);
-            res.locals.connection.connect();
-            next();
-        });
+        pool.initPools(this.config.db);
+        // this.app.use((req, res, next) => {
+        //     res.locals.connection = mysql.createConnection(this.config.db);
+        //     res.locals.connection.connect();
+        //     next();
+        // });
     }
 
     initAppConfig(): void {
