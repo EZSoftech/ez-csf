@@ -72,6 +72,9 @@ export abstract class AbstractServer {
                 apiDocs: this.config.swagger.apiBaseUrl + API_DOCS,
                 swaggerUi: this.config.swagger.apiBaseUrl + API_UI_PATH
             }));
+            this.app.use('/', (req: Request, res: Response) => {
+                res.redirect(this.config.swagger.apiBaseUrl + API_UI_PATH);
+            });
         });
     }
 
