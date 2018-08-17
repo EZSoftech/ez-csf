@@ -19,6 +19,8 @@ class DbUtil {
                     }
                     resolve(result);
                 });
+            }, err => {
+                reject(err);
             });
         });
     }
