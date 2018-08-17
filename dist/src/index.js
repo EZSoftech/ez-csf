@@ -6,5 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./abstract-server"));
 __export(require("./db/connection-pool"));
 __export(require("./db/db-util"));
+__export(require("./models/ezi-error"));
 
 //# sourceMappingURL=index.js.map
