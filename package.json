@@ -1,5 +1,5 @@
 {
-  "name": "ez-csf",
+  "name": "@ezsoftech/csf",
   "version": "1.0.0",
   "description": "Common Service Framework",
   "main": "dist/src/index.js",

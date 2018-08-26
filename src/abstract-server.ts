@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as mysql from 'mysql';
+import * as config from 'config';
 import { Application, Request, Response, NextFunction } from 'express';
 import * as bodyParser from 'body-parser';
 import * as logger from 'morgan';
@@ -39,11 +39,7 @@ export abstract class AbstractServer {
 
     initDatabase(): void {
         pool.initPools(this.config.db);
-        // this.app.use((req, res, next) => {
-        //     res.locals.connection = mysql.createConnection(this.config.db);
-        //     res.locals.connection.connect();
-        //     next();
-        // });
+        let x = config.get('db');
     }
 
     initAppConfig(): void {

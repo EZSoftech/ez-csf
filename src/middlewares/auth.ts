@@ -1,10 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 
+const BEARER = 'Bearer '
+
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
-    let authToken = req.header('authorization');
+    let authorization = req.header('authorization');
+    let authToken = authorization.split(BEARER)[1];
     if (authToken) {
         next();
     } else {
-        res.sendStatus(401);
+        res.json({
+            message: 'Unauthorized'
+        });
     }
 }
