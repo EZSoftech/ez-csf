@@ -1,6 +1,6 @@
 import { AbstractServer } from './abstract-server';
 import * as path from 'path';
-import { EZServerConfig } from './models/server-config';
+import { EZISwaggerConfig } from './models/ezi-swagger-config';
 
 export class Server extends AbstractServer {
 
@@ -8,25 +8,16 @@ export class Server extends AbstractServer {
         return new Server();
     }
 
-    getConfig(): EZServerConfig {
+    getSwaggerConfig(): EZISwaggerConfig {
         return {
-            port: 4000,
-            swagger: {
-                apiBaseUrl: '/ez-csf/v1',
-                yamlPath: path.resolve(__dirname, './api.yaml'),
-                controllerPath: path.resolve(__dirname, './controllers'),
-                protectedEndpoints: [
-                    '/get-user-info',
-                    '/users'
-                ],
-                corsEndpoints: []
-            },
-            db: {
-                host: 'localhost',
-                user: 'root',
-                password: 'Admin',
-                database: 'ez-insights'
-            }
+            apiBaseUrl: '/ez-csf/v1',
+            yamlPath: path.resolve(__dirname, './api.yaml'),
+            controllerPath: path.resolve(__dirname, './controllers'),
+            protectedEndpoints: [
+                '/get-user-info',
+                '/users'
+            ],
+            corsEndpoints: []
         };
     }
 

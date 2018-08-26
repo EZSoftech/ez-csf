@@ -14,9 +14,10 @@ const auth_1 = require("./middlewares/auth");
 const connection_pool_1 = require("./db/connection-pool");
 const API_UI_PATH = '/api-docs';
 const API_DOCS = '/docs';
+const DEFAULT_PORT = 3000;
 class AbstractServer {
     constructor() {
-        this.config = this.getConfig();
+        this.swaggerConfig = this.getSwaggerConfig();
         this.initApp();
         this.initDatabase();
         this.initAppConfig();
@@ -26,12 +27,15 @@ class AbstractServer {
         this.router = express.Router();
     }
     initDatabase() {
-        connection_pool_1.pool.initPools(this.config.db);
-        let x = config.get('db');
+        if (config.has('db')) {
+            connection_pool_1.pool.initPools(config.get('db'));
+        }
     }
     initAppConfig() {
-        let swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.config.swagger.yamlPath, 'utf8'));
-        this.app.set('port', this.config.port);
+        let swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.swaggerConfig.yamlPath, 'utf8'));
+        if (config.has('port')) {
+            this.app.set('port', config.get('port') || DEFAULT_PORT);
+        }
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({
@@ -39,7 +43,7 @@ class AbstractServer {
         }));
         this.app.use(cookieParser('SECRET_GOES_HERE'));
         this.app.use(methodOverride());
-        this.app.use(this.config.swagger.protectedEndpoints.map(endpoint => this.config.swagger.apiBaseUrl + endpoint), auth_1.authenticate);
+        this.app.use(this.swaggerConfig.protectedEndpoints.map(endpoint => this.swaggerConfig.apiBaseUrl + endpoint), auth_1.authenticate);
         this.app.use((err, req, res, next) => {
             err.status = 404;
             next(err);
@@ -47,13 +51,13 @@ class AbstractServer {
         this.app.use(errorHandler());
         swaggerTools.initializeMiddleware(swaggerDefinition, (middleware) => {
             this.app.use(middleware.swaggerMetadata());
-            this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: this.config.swagger.controllerPath }));
+            this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: this.swaggerConfig.controllerPath }));
             this.app.use(middleware.swaggerUi({
-                apiDocs: this.config.swagger.apiBaseUrl + API_DOCS,
-                swaggerUi: this.config.swagger.apiBaseUrl + API_UI_PATH
+                apiDocs: this.swaggerConfig.apiBaseUrl + API_DOCS,
+                swaggerUi: this.swaggerConfig.apiBaseUrl + API_UI_PATH
             }));
             this.app.use('/', (req, res) => {
-                res.redirect(this.config.swagger.apiBaseUrl + API_UI_PATH);
+                res.redirect(this.swaggerConfig.apiBaseUrl + API_UI_PATH);
             });
         });
     }

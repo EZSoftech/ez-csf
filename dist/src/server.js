@@ -6,25 +6,16 @@ class Server extends abstract_server_1.AbstractServer {
     static bootstrap() {
         return new Server();
     }
-    getConfig() {
+    getSwaggerConfig() {
         return {
-            port: 4000,
-            swagger: {
-                apiBaseUrl: '/ez-csf/v1',
-                yamlPath: path.resolve(__dirname, './api.yaml'),
-                controllerPath: path.resolve(__dirname, './controllers'),
-                protectedEndpoints: [
-                    '/get-user-info',
-                    '/users'
-                ],
-                corsEndpoints: []
-            },
-            db: {
-                host: 'localhost',
-                user: 'root',
-                password: 'Admin',
-                database: 'ez-insights'
-            }
+            apiBaseUrl: '/ez-csf/v1',
+            yamlPath: path.resolve(__dirname, './api.yaml'),
+            controllerPath: path.resolve(__dirname, './controllers'),
+            protectedEndpoints: [
+                '/get-user-info',
+                '/users'
+            ],
+            corsEndpoints: []
         };
     }
 }

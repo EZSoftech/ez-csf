@@ -1,5 +1,5 @@
 export * from './abstract-server';
-export { EZServerConfig } from './models/server-config';
+export { EZISwaggerConfig } from './models/ezi-swagger-config';
 export * from './db/connection-pool';
 export * from './db/db-util';
 export * from './models/ezi-request';
