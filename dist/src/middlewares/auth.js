@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const BEARER = 'Bearer ';
 function authenticate(req, res, next) {
-    let authToken = req.header('authorization');
+    let authorization = req.header('authorization');
+    let authToken = authorization.split(BEARER)[1];
     if (authToken) {
         next();
     }
     else {
-        res.sendStatus(401);
+        res.json({
+            message: 'Unauthorized'
+        });
     }
 }
 exports.authenticate = authenticate;

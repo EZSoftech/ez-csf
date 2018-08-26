@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-const BEARER = 'Bearer '
+const BEARER = 'Bearer ';
 
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
     let authorization = req.header('authorization');
