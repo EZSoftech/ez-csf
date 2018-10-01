@@ -52,10 +52,10 @@ gulp.task('server', ['build'], () => {
 gulp.task('build', ['clean', 'tslint'], () => {
     gulp.src(STATIC_APP_GLOB)
         .pipe(gulp.dest(APP_BUILD_PATH));
-    return gulp.src(SRC_FILE_GLOB)
+    let v =  gulp.src(SRC_FILE_GLOB)
         .pipe(sourcemaps.init())
-        .pipe(TS_PROJECT())
-        .js.pipe(sourcemaps.write('.', {
+        .pipe(TS_PROJECT());
+        v.js.pipe(sourcemaps.write('.', {
             includeContent: false,
             mapSources: (path) => {
                 let depth = path.split(/[/,\\]/).length - 2;
@@ -67,6 +67,8 @@ gulp.task('build', ['clean', 'tslint'], () => {
             }
         }))
         .pipe(gulp.dest(APP_BUILD_PATH));
+        v.dts.pipe(gulp.dest('build/src'));
+        return v;
 });
 
 gulp.task('clean', ['clean-coverage'], () => {

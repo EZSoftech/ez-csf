@@ -7,5 +7,6 @@ __export(require("./abstract-server"));
 __export(require("./db/connection-pool"));
 __export(require("./db/db-util"));
 __export(require("./models/ezi-error"));
+__export(require("./utils/auth-util"));
 
 //# sourceMappingURL=index.js.map

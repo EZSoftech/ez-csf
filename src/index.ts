@@ -5,3 +5,4 @@ export * from './db/db-util';
 export * from './models/ezi-request';
 export * from './models/ezi-user-info';
 export * from './models/ezi-error';
+export * from './utils/auth-util';

@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { EZIUserInfo } from './ezi-user-info';
 
 export interface EZIRequest extends Request {
-    knownUser: EZIUserInfo;
+    authorizeUser: EZIUserInfo;
     swagger: {
         apiPath: string;
         path: any;

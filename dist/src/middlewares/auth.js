@@ -1,17 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const BEARER = 'Bearer ';
+const auth_util_1 = require("../utils/auth-util");
 function authenticate(req, res, next) {
-    let authorization = req.header('authorization');
-    let authToken = authorization.split(BEARER)[1];
-    if (authToken) {
-        next();
-    }
-    else {
-        res.json({
-            message: 'Unauthorized'
-        });
-    }
+    auth_util_1.AppUtil.verifyToken(req);
+    next();
 }
 exports.authenticate = authenticate;
 

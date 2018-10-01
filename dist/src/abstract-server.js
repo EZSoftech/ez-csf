@@ -42,10 +42,12 @@ class AbstractServer {
             extended: true
         }));
         this.app.use(cookieParser('SECRET_GOES_HERE'));
+        this.protectEndpoints();
         this.app.use(methodOverride());
-        this.app.use(this.swaggerConfig.protectedEndpoints.map(endpoint => this.swaggerConfig.apiBaseUrl + endpoint), auth_1.authenticate);
         this.app.use((err, req, res, next) => {
-            err.status = 404;
+            if (!err.status) {
+                err.status = 500;
+            }
             next(err);
         });
         this.app.use(errorHandler());
@@ -59,6 +61,18 @@ class AbstractServer {
             this.app.use('/', (req, res) => {
                 res.redirect(this.swaggerConfig.apiBaseUrl + API_UI_PATH);
             });
+        });
+    }
+    protectEndpoints() {
+        if (this.swaggerConfig.protectedEndpoints && this.swaggerConfig.protectedEndpoints.length > 0) {
+            let endpoints = this.getAbsoluteEndpoints(this.swaggerConfig.apiBaseUrl, this.swaggerConfig.protectedEndpoints);
+            this.app.all(endpoints, auth_1.authenticate);
+        }
+    }
+    getAbsoluteEndpoints(apiBaseUrl, endpoints) {
+        return endpoints.map(endpoint => {
+            endpoint = apiBaseUrl + endpoint;
+            return endpoint;
         });
     }
 }
