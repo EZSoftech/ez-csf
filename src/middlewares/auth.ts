@@ -1,8 +1,8 @@
 import { Response, NextFunction } from 'express';
 import { AppUtil } from '../utils/auth-util';
-import { EZIRequest } from '../models/ezi-request';
+import { ApiRequest } from '../models/api-request';
 
-export function authenticate(req: EZIRequest, res: Response, next: NextFunction): void {
+export function authenticate(req: ApiRequest, res: Response, next: NextFunction): void {
     AppUtil.verifyToken(req);
     next();
 }

@@ -1,4 +1,4 @@
-export interface EZISwaggerConfig {
+export interface AppSwaggerConfig {
     apiBaseUrl: string;
     yamlPath: string;
     controllerPath: string;

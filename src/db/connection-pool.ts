@@ -1,5 +1,4 @@
 import * as MySql from 'mysql';
-import * as Promise from 'bluebird';
 
 const READ_DB = 'read';
 const WRITE_DB = 'write';
@@ -13,7 +12,7 @@ export class ConnectionPool {
         this.pools = new Map();
     }
 
-    getConnection(type: string): Promise<MySql.PoolConnection> {
+    async getConnection(type: string, autoCommit = true): Promise<MySql.PoolConnection> {
         return new Promise<MySql.PoolConnection>((resolve: (connection: MySql.PoolConnection) => void, reject: (error: any) => void) => {
             if (this.pools == null || this.pools.get(type) == null) {
                 reject(new Error('No database configured'));
@@ -24,7 +23,16 @@ export class ConnectionPool {
                         if (err) {
                             reject(err);
                         } else {
-                            resolve(connection);
+                            if (autoCommit) {
+                                resolve(connection);
+                            } else {
+                                connection.beginTransaction((err) => {
+                                    if (err) {
+                                        reject(err);
+                                    }
+                                    resolve(connection);
+                                });
+                            }
                         }
                     });
                 } else {

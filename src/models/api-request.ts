@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { EZIUserInfo } from './ezi-user-info';
+import { AppUserInfo } from './app-user-info';
 
-export interface EZIRequest extends Request {
-    authorizeUser: EZIUserInfo;
+export interface ApiRequest extends Request {
+    authorizeUser: AppUserInfo;
     swagger: {
         apiPath: string;
         path: any;

@@ -1,4 +1,4 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 
-//# sourceMappingURL=ezi-request.js.map
+//# sourceMappingURL=api-request.js.map

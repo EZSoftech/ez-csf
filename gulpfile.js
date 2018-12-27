@@ -6,16 +6,6 @@ let nodemon = require('gulp-nodemon');
 let ts = require('gulp-typescript');
 let sourcemaps = require('gulp-sourcemaps');
 let lodash = require('lodash');
-let sequence = require('gulp-sequence');
-let exit = require('gulp-exit');
-let istanbul = require('gulp-istanbul');
-let mocha = require('gulp-mocha');
-let util = require('gulp-util');
-let exec = require('child_process').exec;
-let fs = require('fs');
-let argv = require('yargs').argv;
-let mysql = require('mysql');
-let db = require('db-migrate');
 
 const BUILD_PATH = 'dist';
 const APP_BUILD_PATH = BUILD_PATH + '/src';

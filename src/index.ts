@@ -1,8 +1,10 @@
 export * from './abstract-server';
-export { EZISwaggerConfig } from './models/ezi-swagger-config';
+export * from './abstract-socket-server';
+export { AppSwaggerConfig } from './models/app-swagger-config';
 export * from './db/connection-pool';
 export * from './db/db-util';
-export * from './models/ezi-request';
-export * from './models/ezi-user-info';
-export * from './models/ezi-error';
+export * from './models/api-request';
+export * from './models/api-response';
+export * from './models/app-user-info';
+export * from './models/app-error';
 export * from './utils/auth-util';

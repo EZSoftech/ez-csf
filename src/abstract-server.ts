@@ -9,10 +9,11 @@ import * as methodOverride from 'method-override';
 import * as swaggerTools from 'swagger-tools';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
-import { EZISwaggerConfig } from './models/ezi-swagger-config';
+import { AppSwaggerConfig } from './models/app-swagger-config';
 import { authenticate } from './middlewares/auth';
-import { Router } from 'express';
 import { pool } from './db/connection-pool';
+import { AppError } from './models/app-error';
+import * as cors from 'cors';
 
 const API_UI_PATH = '/api-docs';
 const API_DOCS = '/docs';
@@ -21,21 +22,24 @@ const DEFAULT_PORT = 3000;
 export abstract class AbstractServer {
 
     app: Application;
-    router: Router;
-    swaggerConfig: EZISwaggerConfig;
+    swaggerConfig: AppSwaggerConfig;
 
-    public abstract getSwaggerConfig(): EZISwaggerConfig;
+    public abstract getSwaggerConfig(): AppSwaggerConfig;
 
     constructor() {
         this.swaggerConfig = this.getSwaggerConfig();
         this.initApp();
         this.initDatabase();
-        this.initAppConfig();
     }
 
     initApp(): void {
         this.app = express();
-        this.router = express.Router();
+        if (config.has('port')) {
+            this.app.set('port', config.get('port') || DEFAULT_PORT);
+        }
+        this.initMiddlewares();
+        this.initProtectEndpoints();
+        this.initSwaggerTools();
     }
 
     initDatabase(): void {
@@ -44,29 +48,19 @@ export abstract class AbstractServer {
         }
     }
 
-    initAppConfig(): void {
-        let swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.swaggerConfig.yamlPath, 'utf8'));
-        if (config.has('port')) {
-            this.app.set('port', config.get('port') || DEFAULT_PORT);
-        }
+    private initMiddlewares(): void {
+        this.app.use(cors());
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({
             extended: true
         }));
         this.app.use(cookieParser('SECRET_GOES_HERE'));
-        this.protectEndpoints();
         this.app.use(methodOverride());
-        this.app.use((err: any,
-            req: Request,
-            res: Response,
-            next: NextFunction) => {
-            if (!err.status) {
-                err.status = 500;
-            }
-            next(err);
-        });
-        this.app.use(errorHandler());
+    }
+
+    private initSwaggerTools(): void {
+        let swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.swaggerConfig.yamlPath, 'utf8'));
         swaggerTools.initializeMiddleware(swaggerDefinition, (middleware: swaggerTools.Middleware20) => {
             this.app.use(middleware.swaggerMetadata());
             this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: this.swaggerConfig.controllerPath }));
@@ -77,10 +71,20 @@ export abstract class AbstractServer {
             this.app.use('/', (req: Request, res: Response) => {
                 res.redirect(this.swaggerConfig.apiBaseUrl + API_UI_PATH);
             });
+            this.app.use((err: any,
+                req: Request,
+                res: Response,
+                next: NextFunction) => {
+                if (!err.status) {
+                    err.status = 500;
+                }
+                res.status(err.status).json(new AppError(err.status, err.message));
+            });
+            this.app.use(errorHandler());
         });
     }
 
-    private protectEndpoints(): void {
+    private initProtectEndpoints(): void {
         if (this.swaggerConfig.protectedEndpoints && this.swaggerConfig.protectedEndpoints.length > 0) {
             let endpoints = this.getAbsoluteEndpoints(this.swaggerConfig.apiBaseUrl, this.swaggerConfig.protectedEndpoints);
             this.app.all(endpoints, authenticate);
