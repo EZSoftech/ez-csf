@@ -58,7 +58,8 @@ const AppUtil = {
     generateAccessToken: generateAccessToken,
     generateRefreshToken: generateRefreshToken,
     verifyToken: verifyToken,
-    toPlainObject: toPlainObject
+    toPlainObject: toPlainObject,
+    getUserInfo: getUserInfo
 };
 exports.AppUtil = AppUtil;
 
