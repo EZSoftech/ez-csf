@@ -13,6 +13,7 @@
   "author": "M A Akhtar",
   "license": "ISC",
   "dependencies": {
+    "@ezsoftech/common-objects": "git+https://ezsoftech@bitbucket.org/awesomefive/common-objects.git#master",
     "body-parser": "^1.18.3",
     "config": "^2.0.1",
     "cookie-parser": "^1.4.3",

@@ -32,6 +32,16 @@ function verifyToken(req) {
         throw err;
     }
 }
+function getUserInfo(authToken) {
+    let appUser;
+    try {
+        appUser = jwt.verify(authToken, JWT_SECRET);
+    }
+    catch (error) {
+        throw error;
+    }
+    return appUser;
+}
 function updateAuthorizeUser(req, authToken) {
     req.authorizeUser = TOKEN_USER_MAP.get(authToken);
 }

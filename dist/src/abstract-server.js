@@ -51,7 +51,10 @@ class AbstractServer {
         let swaggerDefinition = yaml.safeLoad(fs.readFileSync(this.swaggerConfig.yamlPath, 'utf8'));
         swaggerTools.initializeMiddleware(swaggerDefinition, (middleware) => {
             this.app.use(middleware.swaggerMetadata());
-            this.app.use(middleware.swaggerRouter({ useStubs: true, controllers: this.swaggerConfig.controllerPath }));
+            this.app.use(middleware.swaggerRouter({
+                useStubs: true,
+                controllers: this.swaggerConfig.controllerPath
+            }));
             this.app.use(middleware.swaggerUi({
                 apiDocs: this.swaggerConfig.apiBaseUrl + API_DOCS,
                 swaggerUi: this.swaggerConfig.apiBaseUrl + API_UI_PATH
@@ -69,7 +72,8 @@ class AbstractServer {
         });
     }
     initProtectEndpoints() {
-        if (this.swaggerConfig.protectedEndpoints && this.swaggerConfig.protectedEndpoints.length > 0) {
+        if (this.swaggerConfig.protectedEndpoints &&
+            this.swaggerConfig.protectedEndpoints.length > 0) {
             let endpoints = this.getAbsoluteEndpoints(this.swaggerConfig.apiBaseUrl, this.swaggerConfig.protectedEndpoints);
             this.app.all(endpoints, auth_1.authenticate);
         }
